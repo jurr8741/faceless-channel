@@ -33,3 +33,4 @@ def upload_video():
     print(f"Video geüpload! Video ID: {response.get('id')}")
 
 if __name__ == "__main__":
+    upload_video()
