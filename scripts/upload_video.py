@@ -1,5 +1,6 @@
 import os
 import json
+import re
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
@@ -9,11 +10,20 @@ def upload_video():
     if not raw_token:
         raise ValueError("YOUTUBE_TOKEN is niet ingesteld!")
 
-    # Strip eventuele lege ruimtes of newline tekens
-    raw_token = raw_token.strip()
-    
-    token_data = json.loads(raw_token)
-    
+    # Zoek het eerste geldige JSON object {...} op in de string
+    match = re.search(r'\{.*?\}', raw_token, re.DOTALL)
+    if not match:
+        raise ValueError("Geen geldige JSON structuur gevonden in YOUTUBE_TOKEN!")
+
+    clean_json_str = match.group(0)
+
+    try:
+        token_data = json.loads(clean_json_str)
+    except json.JSONDecodeError as e:
+        print("FOUT bij het parseren van YOUTUBE_TOKEN:")
+        print(clean_json_str)
+        raise e
+
     credentials = Credentials.from_authorized_user_info(token_data)
     youtube = build("youtube", "v3", credentials=credentials)
 
