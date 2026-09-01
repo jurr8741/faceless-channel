@@ -5,32 +5,43 @@ from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
 def upload_video():
-    # In GitHub Actions lezen we de JSON direct uit de Secret environment variables
-    if os.environ.get("YOUTUBE_TOKEN"):
-        token_data = json.loads(os.environ.get("YOUTUBE_TOKEN"))
-        creds = Credentials.from_authorized_user_info(token_data)
-    else:
-        creds = Credentials.from_authorized_user_file("token.json")
+    raw_token = os.environ.get("YOUTUBE_TOKEN")
+    if not raw_token:
+        raise ValueError("YOUTUBE_TOKEN is niet ingesteld!")
 
-    youtube = build("youtube", "v3", credentials=creds)
+    # Strip eventuele lege ruimtes of newline tekens
+    raw_token = raw_token.strip()
+    
+    token_data = json.loads(raw_token)
+    
+    credentials = Credentials.from_authorized_user_info(token_data)
+    youtube = build("youtube", "v3", credentials=credentials)
 
+    file_path = "assets/output.mp4"
+    
     body = {
         "snippet": {
-            "title": "Niet weer eentje! #shorts",
-            "description": "Automatisch gegenereerde short.",
-            "tags": ["shorts", "humor"],
-            "categoryId": "23"
+            "title": "A Romance Story #Shorts",
+            "description": "Daily romance story. Subscribe for more! #romance #stories #shorts",
+            "tags": ["romance", "story", "shorts"],
+            "categoryId": "22"
         },
         "status": {
-            "privacyStatus": "private"  # Of 'public' zodra je het getest hebt
+            "privacyStatus": "public",
+            "selfDeclaredMadeForKids": False
         }
     }
 
-    media = MediaFileUpload("assets/output/final_video.mp4", chunksize=-1, resumable=True)
-    request = youtube.videos().insert(part="snippet,status", body=body, media_body=media)
+    media = MediaFileUpload(file_path, chunksize=-1, resumable=True, mimetype="video/mp4")
+    
+    request = youtube.videos().insert(
+        part="snippet,status",
+        body=body,
+        media_body=media
+    )
     
     response = request.execute()
-    print(f"Video geüpload! Video ID: {response.get('id')}")
+    print(f"Video succesvol geüpload! Video ID: {response.get('id')}")
 
 if __name__ == "__main__":
     upload_video()
