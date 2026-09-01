@@ -9,7 +9,7 @@ def generate_voice():
     with open("assets/story.txt", "r", encoding="utf-8") as f:
         text = f.read()
 
-    voice_id = "21m00Tcm4TlvDq8ikWAM"
+    voice_id = "pNInz6obpgDQGcFmaJgB"
     url = f"https://api.elevenlabs.io/v1/text-to-speech/{voice_id}"
 
     headers = {
