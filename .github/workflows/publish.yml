@@ -1,9 +1,9 @@
 name: Publish Video
 
 on:
-  workflow_dispatch: # Hierdoor kun je de workflow handmatig starten op GitHub
+  workflow_dispatch:
   schedule:
-    - cron: '0 12 * * *' # Draait elke dag om 12:00 UTC
+    - cron: '0 12 * * *'
 
 jobs:
   build-and-publish:
@@ -21,7 +21,7 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y ffmpeg
+          sudo apt-get install -y ffmpeg imagemagick
 
       - name: Install Python Dependencies
         run: |
