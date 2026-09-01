@@ -1,5 +1,5 @@
 import os
-from moviepy.editor import AudioFileClip, ColorClip, CompositeVideoClip, TextClip
+from moviepy import AudioFileClip, ColorClip, CompositeVideoClip, TextClip
 
 def build_video():
     audio = AudioFileClip("assets/voiceover.mp3")
