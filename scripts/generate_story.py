@@ -21,7 +21,7 @@ def generate_story():
 
     if current_part == 1:
         prompt = (
-            "Write a short, engaging romance story in English (max 350 words) for a YouTube Short. "
+            "Write a short, engaging romance story in English (max 80  words) for a YouTube Short. "
             "It must be unique, with varied characters, settings, and plotlines. "
             "If the story requires a continuation, end it with exact phrase: 'Come back for the next part tomorrow.' "
             "Do not include any intro, title, or extra text. Return only the story text."
