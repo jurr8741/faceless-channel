@@ -9,7 +9,6 @@ def generate_story():
 
     client = genai.Client(api_key=api_key)
 
-    # Status bijhouden (voor vervolgverhalen)
     state_file = "assets/story_state.json"
     state = {"current_part": 1, "previous_story": ""}
     
@@ -20,7 +19,6 @@ def generate_story():
     current_part = state.get("current_part", 1)
     previous_story = state.get("previous_story", "")
 
-    # Prompt opbouwen op basis van de status
     if current_part == 1:
         prompt = (
             "Write a short, engaging romance story in English (max 350 words) for a YouTube Short. "
@@ -29,11 +27,16 @@ def generate_story():
             "Do not include any intro, title, or extra text. Return only the story text."
         )
     else:
+        continuation_instruction = (
+            'If it needs one last part, end with: "Come back for the next part tomorrow."' 
+            if current_part == 2 else 
+            'This is the final part, wrap up the story gracefully without any cliffhanger.'
+        )
         prompt = (
-            f"This is Part {current_part} of a ongoing romance story (max 3 parts total). "
-            f"Here is the previous part:\n\"{previous_story}\"\n\n"
+            f"This is Part {current_part} of an ongoing romance story (max 3 parts total).\n"
+            f"Previous part: {previous_story}\n\n"
             f"Write the direct continuation of this romance story in English (max 350 words). "
-            f"{'If it needs one last part, end with: \"Come back for the next part tomorrow.\"' if current_part == 2 else 'This is the final part, wrap up the story gracefully without any cliffhanger.'} "
+            f"{continuation_instruction} "
             "Do not include any intro, title, or extra text. Return only the story text."
         )
 
@@ -44,7 +47,6 @@ def generate_story():
 
     story = response.text.strip()
 
-    # Bepalen of er een vervolg komt
     has_continuation = "Come back for the next part tomorrow." in story
 
     if has_continuation and current_part < 3:
@@ -52,12 +54,10 @@ def generate_story():
     else:
         next_state = {"current_part": 1, "previous_story": ""}
 
-    # Sla de nieuwe status op voor de volgende run van morgen
     os.makedirs("assets", exist_ok=True)
     with open(state_file, "w", encoding="utf-8") as f:
         json.dump(next_state, f, indent=2)
 
-    # Sla het gegenereerde verhaal op voor de video-generator
     with open("assets/story.txt", "w", encoding="utf-8") as f:
         f.write(story)
 
@@ -66,4 +66,3 @@ def generate_story():
 
 if __name__ == "__main__":
     generate_story()
-
